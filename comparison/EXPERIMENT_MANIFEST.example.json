@@ -1,0 +1,110 @@
+{
+  "project_name": "medical-negative-generation-model-comparison",
+  "created_on": "2026-03-18",
+  "goal": "Compare generation quality, controllability, locality, plausibility, latency, and cost across frontier and local models.",
+  "dataset": {
+    "source": "medcase",
+    "dataset_name": "zou-lab/MedCaseReasoning",
+    "split": "test",
+    "max_samples": 100,
+    "start_index": 0,
+    "shuffle": false,
+    "evidence_field": "text",
+    "max_evidence_chars": 5000
+  },
+  "prompt_freeze": {
+    "script_path": "generate_bad_reasoning.py",
+    "prompt_version": "plan-rewrite-judge-v1",
+    "notes": [
+      "Do not change prompts after pilot unless you start a new experiment version.",
+      "If you compare a gateway alias such as gpt-5.4, record the exact route name and provider."
+    ]
+  },
+  "generation": {
+    "error_types": ["F1", "F2", "F3", "F4"],
+    "generation_mode": "all",
+    "seeds": [42, 43, 44],
+    "temperature": 0.3,
+    "max_tokens": 1800,
+    "max_retries": 3,
+    "sleep_seconds": 0.0,
+    "enable_llm_qc_during_generation": false,
+    "why_llm_qc_is_off": "Keep generation and evaluation separate to reduce same-model or same-provider bias."
+  },
+  "heuristic_qc": {
+    "min_similarity": 0.55,
+    "max_similarity": 0.98,
+    "min_length_ratio": 0.6,
+    "max_length_ratio": 1.5,
+    "max_novelty_ratio": 0.4
+  },
+  "models": [
+    {
+      "id": "openai_gpt_5_1_official",
+      "provider": "openai",
+      "transport": "openai-compatible",
+      "model_name": "gpt-5.1",
+      "base_url": "https://api.openai.com/v1",
+      "api_key_env": "OPENAI_API_KEY",
+      "notes": "Official OpenAI model listed in OpenAI model docs as of 2026-03-18."
+    },
+    {
+      "id": "gateway_gpt_5_4_alias",
+      "provider": "gateway",
+      "transport": "openai-compatible",
+      "model_name": "gpt-5.4",
+      "base_url": "https://your-gateway.example/v1",
+      "api_key_env": "OPENAI_GATEWAY_API_KEY",
+      "notes": "Use only if your provider exposes a gpt-5.4 route. Record the gateway vendor in the run log."
+    },
+    {
+      "id": "anthropic_claude_opus_4_1_gateway",
+      "provider": "anthropic-via-gateway",
+      "transport": "openai-compatible",
+      "model_name": "claude-opus-4-1",
+      "base_url": "https://your-openai-compatible-gateway.example/v1",
+      "api_key_env": "ANTHROPIC_GATEWAY_API_KEY",
+      "notes": "Replace model_name with the exact route name exposed by your gateway."
+    },
+    {
+      "id": "local_qwen3_next_80b",
+      "provider": "local",
+      "transport": "openai-compatible",
+      "model_name": "/home/models/Qwen3-Next-80B-A3B-Instruct",
+      "base_url": "http://127.0.0.1:8886/v1",
+      "api_key_env": "LOCAL_QWEN_API_KEY",
+      "notes": "If your local server does not require auth, leave the env var unset and the runner will fall back to EMPTY."
+    }
+  ],
+  "evaluation": {
+    "blind_review": true,
+    "human_review_required": true,
+    "human_review_sample_plan": {
+      "per_model_per_error_type": 20,
+      "stratify_by_status": ["accepted", "review", "rejected", "infeasible"]
+    },
+    "primary_metrics": [
+      "plan_feasible_rate",
+      "valid_generation_rate",
+      "accepted_rate",
+      "answer_policy_match_rate",
+      "target_error_match_rate",
+      "single_dominant_error_rate",
+      "localized_rewrite_score",
+      "clinical_plausibility_score",
+      "latency_per_successful_sample",
+      "cost_per_accepted_sample"
+    ]
+  },
+  "output_layout": {
+    "root": "comparison_outputs/<run_tag>/<model_id>/seed_<seed>/",
+    "main_file": "accepted.jsonl",
+    "sidecars": [
+      "accepted.attempts.jsonl",
+      "accepted.review.jsonl",
+      "accepted.rejected.jsonl",
+      "accepted.infeasible.jsonl",
+      "accepted.failures.jsonl"
+    ]
+  }
+}

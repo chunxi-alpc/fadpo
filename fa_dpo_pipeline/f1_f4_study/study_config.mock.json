@@ -1,0 +1,68 @@
+{
+  "study_name": "medical_f1_f4_mock_smoke",
+  "output_root": "outputs/f1_f4_study",
+  "stages": {
+    "smoke": {
+      "description": "Tiny mock end-to-end smoke run."
+    },
+    "pilot": {
+      "description": "Slightly expanded mock run."
+    },
+    "final": {
+      "description": "Largest mock run."
+    }
+  },
+  "defaults": {
+    "sampling_seed": 20260409,
+    "generation_temperature": 0.0,
+    "generation_case_max_tokens": 512,
+    "generation_mcq_max_tokens": 256,
+    "generation_max_concurrency": 2,
+    "judge_temperature": 0.0,
+    "judge_max_tokens": 512,
+    "judge_max_concurrency": 2,
+    "judge_min_reasoning_chars": 10
+  },
+  "judge_model": {
+    "id": "mock-responder",
+    "tag": "mock_judge",
+    "base_url": "http://127.0.0.1:18080/v1",
+    "api_key": "EMPTY"
+  },
+  "models": [
+    {
+      "id": "mock-responder",
+      "tag": "mock_responder",
+      "base_url": "http://127.0.0.1:18080/v1",
+      "api_key": "EMPTY",
+      "max_concurrency": 2
+    }
+  ],
+  "datasets": [
+    {
+      "key": "medcase",
+      "tag": "medcase",
+      "type": "case",
+      "input_file": "hf_datasets/MedCaseReasoning/medcasereasoning_core.csv",
+      "splits": "test",
+      "include_article_text": false,
+      "stage_sizes": {
+        "smoke": 2,
+        "pilot": 3,
+        "final": 4
+      }
+    },
+    {
+      "key": "medbullets_op4",
+      "tag": "medbullets_op4",
+      "type": "mcq",
+      "input_file": "test/eval_data/medbullets_op4.jsonl",
+      "dataset_name": "MedBullets-OP4",
+      "stage_sizes": {
+        "smoke": 2,
+        "pilot": 3,
+        "final": 4
+      }
+    }
+  ]
+}
