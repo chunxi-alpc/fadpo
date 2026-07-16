@@ -1,0 +1,130 @@
+{
+  "study_name": "medical_f1_f4_natural_error_study",
+  "output_root": "outputs/f1_f4_study",
+  "stages": {
+    "smoke": {
+      "description": "First end-to-end shakeout run."
+    },
+    "pilot": {
+      "description": "Trend-checking run before full expansion."
+    },
+    "final": {
+      "description": "Paper-ready run."
+    }
+  },
+  "defaults": {
+    "sampling_seed": 20260409,
+    "generation_temperature": 0.0,
+    "generation_case_max_tokens": 2000,
+    "generation_mcq_max_tokens": 1200,
+    "generation_max_concurrency": 8,
+    "judge_temperature": 0.0,
+    "judge_max_tokens": 900,
+    "judge_max_concurrency": 8,
+    "judge_min_reasoning_chars": 30
+  },
+  "judge_model": {
+    "id": "gpt-5.4",
+    "tag": "judge_gpt_5_4",
+    "base_url": "https://api.key77qiqi.cn/v1",
+    "api_key": "YOUR_CLOSED_SOURCE_API_KEY"
+  },
+  "models": [
+    {
+      "id": "gpt-5.4",
+      "tag": "gpt_5_4",
+      "base_url": "https://api.key77qiqi.cn/v1",
+      "api_key": "YOUR_CLOSED_SOURCE_API_KEY"
+    },
+    {
+      "id": "claude-sonnet-4-6",
+      "tag": "claude_sonnet_4_6",
+      "base_url": "https://api.key77qiqi.cn/v1",
+      "api_key": "YOUR_CLOSED_SOURCE_API_KEY"
+    },
+    {
+      "id": "gemini-3.1-pro-preview",
+      "tag": "gemini_3_1_pro",
+      "base_url": "https://api.key77qiqi.cn/v1",
+      "api_key": "YOUR_CLOSED_SOURCE_API_KEY"
+    },
+    {
+      "id": "/path/to/Qwen3-Next-80B-A3B-Instruct",
+      "tag": "qwen3_next_80b",
+      "base_url": "http://localhost:8000/v1",
+      "api_key": "EMPTY"
+    },
+    {
+      "id": "UCSC-VLAA/MedReason-8B",
+      "tag": "medreason_8b",
+      "base_url": "http://localhost:8001/v1",
+      "api_key": "EMPTY"
+    }
+  ],
+  "datasets": [
+    {
+      "key": "medcase",
+      "tag": "medcase",
+      "type": "case",
+      "input_file": "hf_datasets/MedCaseReasoning/medcasereasoning_core.csv",
+      "splits": "test",
+      "include_article_text": false,
+      "stage_sizes": {
+        "smoke": 10,
+        "pilot": 80,
+        "final": 150
+      }
+    },
+    {
+      "key": "medbullets_op4",
+      "tag": "medbullets_op4",
+      "type": "mcq",
+      "input_file": "test/eval_data/medbullets_op4.jsonl",
+      "dataset_name": "MedBullets-OP4",
+      "stage_sizes": {
+        "smoke": 10,
+        "pilot": 40,
+        "final": 100
+      }
+    },
+    {
+      "key": "medqa",
+      "tag": "medqa",
+      "type": "mcq",
+      "input_file": "test/eval_data/medqa_test.jsonl",
+      "dataset_name": "MedQA",
+      "stage_sizes": {
+        "smoke": 10,
+        "pilot": 40,
+        "final": 100
+      }
+    },
+    {
+      "key": "medhalt_reasoning",
+      "tag": "medhalt_reasoning",
+      "type": "mcq",
+      "input_file": "test/eval_data/medhalt_reasoning_test.json",
+      "dataset_name": "Med-HALT",
+      "sampling": {
+        "group_field": "subset"
+      },
+      "stage_group_sizes": {
+        "smoke": {
+          "reasoning_fake": 4,
+          "reasoning_fct": 3,
+          "reasoning_nota": 3
+        },
+        "pilot": {
+          "reasoning_fake": 14,
+          "reasoning_fct": 13,
+          "reasoning_nota": 13
+        },
+        "final": {
+          "reasoning_fake": 30,
+          "reasoning_fct": 30,
+          "reasoning_nota": 30
+        }
+      }
+    }
+  ]
+}

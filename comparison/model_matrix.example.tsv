@@ -1,0 +1,5 @@
+enabled	model_id	llm_mode	model_name	base_url	api_key_env	notes
+1	openai_gpt_5_1_official	api	gpt-5.1	https://api.openai.com/v1	OPENAI_API_KEY	Official OpenAI route as of 2026-03-18
+0	gateway_gpt_5_4_alias	api	gpt-5.4	https://your-gateway.example/v1	OPENAI_GATEWAY_API_KEY	If your provider exposes a gpt-5.4 alias, enable this row and keep provider notes elsewhere
+0	anthropic_claude_opus_4_1_gateway	api	claude-opus-4-1	https://your-openai-compatible-gateway.example/v1	ANTHROPIC_GATEWAY_API_KEY	Replace model_name with the exact gateway route
+1	local_qwen3_next_80b	local	/home/models/Qwen3-Next-80B-A3B-Instruct	http://127.0.0.1:8886/v1	LOCAL_QWEN_API_KEY	Local OpenAI-compatible endpoint

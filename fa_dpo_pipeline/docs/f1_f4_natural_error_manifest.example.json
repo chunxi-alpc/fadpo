@@ -1,0 +1,67 @@
+{
+  "study_name": "f1_f4_natural_error",
+  "main_dataset": {
+    "name": "MedCaseReasoning",
+    "input_file": "result/f1_f4_natural_error/medcase_test.jsonl",
+    "task_type": "case_reasoning",
+    "error_types": ["F1", "F2", "F3", "F4"],
+    "priority": "main"
+  },
+  "external_datasets": [
+    {
+      "name": "MedBullets-OP4",
+      "input_file": "test/eval_data/medbullets_op4.jsonl",
+      "task_type": "mcq",
+      "focus_errors": ["F4"],
+      "priority": "external"
+    },
+    {
+      "name": "MedBullets-OP5",
+      "input_file": "test/eval_data/medbullets_op5.jsonl",
+      "task_type": "mcq",
+      "focus_errors": ["F4"],
+      "priority": "external"
+    },
+    {
+      "name": "MedQA",
+      "input_file": "test/eval_data/medqa_test.jsonl",
+      "task_type": "mcq",
+      "focus_errors": ["F4"],
+      "priority": "external"
+    },
+    {
+      "name": "Med-HALT-Reasoning",
+      "input_file": "test/eval_data/medhalt_reasoning_test.json",
+      "task_type": "mcq_grouped",
+      "focus_errors": ["F4"],
+      "priority": "robustness"
+    }
+  ],
+  "models": [
+    {
+      "model_id": "frontier_gateway_model",
+      "group": "frontier_closed"
+    },
+    {
+      "model_id": "/home/models/Qwen3-Next-80B-A3B-Instruct",
+      "group": "open_strong"
+    },
+    {
+      "model_id": "UCSC-VLAA/MedReason-8B",
+      "group": "medical_domain"
+    }
+  ],
+  "core_metrics": [
+    "answer_exact_match_rate",
+    "dominant_F1_rate",
+    "dominant_F2_rate",
+    "dominant_F3_rate",
+    "dominant_F4_rate",
+    "any_faithfulness_error_rate",
+    "correct_answer_subset_error_rate"
+  ],
+  "audit": {
+    "main_dataset_samples_per_model": 60,
+    "external_dataset_samples_per_model": 25
+  }
+}
